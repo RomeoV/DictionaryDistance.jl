@@ -6,12 +6,14 @@ using SparseArrays
 import Random: shuffle
 
 @testset "DictionaryDistance.jl" begin
-    # @testset "Code quality (Aqua.jl)" begin
-    #     Aqua.test_all(DictionaryDistance)
-    # end
-    # @testset "Code linting (JET.jl)" begin
-    #     JET.test_package(DictionaryDistance; target_defined_modules = true)
-    # end
+    @testset "Code quality (Aqua.jl)" begin
+        # we do pirate (on purpose) the `_roc` method.
+        # also there's some inherited method ambiguities from `StatsBase`, but they're not from us.
+        Aqua.test_all(DictionaryDistance; ambiguities=false, piracies=false)
+    end
+    @testset "Code linting (JET.jl)" begin
+        JET.test_package(DictionaryDistance; target_defined_modules = true)
+    end
 
     D = rand(100, 400);
     X = sprand(400, 10_000, 0.01)

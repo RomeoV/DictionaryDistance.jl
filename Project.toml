@@ -12,3 +12,8 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 julia = "1.10"
+Distances = "^0.10"
+Hungarian = "^0.7"
+MLBase = "^0.9"
+Reexport = "1"
+SparseArrays = "1"

@@ -16,8 +16,6 @@ nonzerovec(vec::SparseVector{<:Number}) = SparseVector(length(vec), nonzeroinds(
 function _roc(gt::SparseVector{Bool}, pr::SparseVector{Bool})
     len = length(gt)                                                                        
     length(pr) == len || throw(DimensionMismatch("Inconsistent lengths."))                  
-    # 
-    idx_either = nonzeroinds(gt .|| pr)
     p = sum(gt)
     n = len - p
     tp = sum(gt .&& pr)
@@ -27,24 +25,8 @@ function _roc(gt::SparseVector{Bool}, pr::SparseVector{Bool})
     return ROCNums{Int}(p, n, tp, tn, fp, fn)                                               
 end
 
-function compute_precision_recall_F_score(X_true, X_res; filter_smallest_quantile=false)
-    scores = map(zip(eachcol(X_true), eachcol(X_res))) do (col_lhs, col_rhs)
-        precision = sum(nonzeroinds(col_lhs) .∈ [nonzeroinds(col_rhs)]) / length(nonzeroinds(col_rhs))
-        !isfinite(precision) && (precision = 0;)
-        recall = sum(nonzeroinds(col_lhs) .∈ [nonzeroinds(col_rhs)]) / length(nonzeroinds(col_lhs))
-        !isfinite(recall) && (recall = 0;)
-        F_score = 2*(precision*recall) / max(precision + recall, 1)
-        (; precision, recall, F_score)
-    end
-    (; precision=mean(getfield.(scores, :precision)),
-       recall=mean(getfield.(scores, :recall)),
-       F_score=mean(getfield.(scores, :F_score)),
-     )
-end
-# Write your package code here.
-
 # e.g. plot_nice_...(X, res.X[ass, :])
-function plot_nice_side_by_side_view_of_sparse_results(X, X_res; filter_smallest_quantile=false)
+function _plot_nice_side_by_side_view_of_sparse_results(X, X_res; filter_smallest_quantile=false)
     if filter_smallest_quantile
         X[X .< 0.25] .= 0
         X_res[X_res .< 0.25] .= 0

@@ -1,7 +1,7 @@
 name = "DictionaryDistance"
 uuid = "4a50f2c7-854b-4ecf-96c4-63ef3198682d"
 authors = ["Romeo Valentin <romeov@stanford.edu> and contributors"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"

@@ -1,13 +1,49 @@
+"""
+    module DictionaryDistance
+
+Help evaluate how well a problem ``Y \\approx D * X`` has been solved.
+This module offers two main functions:
+1. `align_dictionaries`, to help match found dictionaries `D` to the original dictionaries, and
+2. `roc`, with additional functions `precision`, `recall`, and `f1score`.
+
+Also, the helper function `nonzerovec` is included.
+
+A typical workflow might look as follows:
+
+```julia
+D = ...
+X = ...
+Y = D*X
+res = ksvd(Y, size(D, 2))
+
+D_est, X_est = res.D, res.X
+(; assignment) = align_dictionaries(D, D_est)
+X_est_perm = X_est_perm[assignment, :]
+
+r = roc(nonzerovec(X[:]), nonzerovec(X_est_perm[:]))
+@show precision(r), recall(r), f1score(r)
+```
+"""
 module DictionaryDistance
-import SparseArrays: nonzeroinds
-import StatsBase: mean
+import SparseArrays: nonzeroinds, SparseVector, nnz
 using Hungarian, Distances
 import MLBase: _roc
+import Reexport: @reexport
+@reexport import MLBase: roc, precision, recall, f1score
 
-function align_dictionaries(D, D_approx)
-    distances = [CosineDist()(v1, v2) for v1 in eachcol(D), v2 in eachcol(D_approx)]
+export align_dictionaries, nonzerovec
+
+"""
+    align_dictionaries(D_lhs, D_rhs)
+
+Finds the best assignment of dictionary vectors of `D_rhs` and `D_lhs`.
+Specifically, this function returns assignments s.t. D_rhs[:, assignment] ≈ D_lhs.
+If this comes frome some setup `Y ≈ D * X` then X_rhs[assignment, :] ≈ X_lhs.
+"""
+function align_dictionaries(D_lhs::AbstractMatrix, D_rhs::AbstractMatrix)
+    distances = [CosineDist()(v1, v2) for v1 in eachcol(D_lhs), v2 in eachcol(D_rhs)]
     assignment, cost = hungarian(distances)
-    (; assignment, cost)  # s.t. D_approx[:, assignment] ≈ D, and X[assignment, :] ≈ X
+    (; assignment, cost)  # s.t. D_rhs[:, assignment] ≈ D_lhs, and X_rhs[assignment, :] ≈ X_lhs
 end
 
 # function precition

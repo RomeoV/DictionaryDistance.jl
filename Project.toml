@@ -1,0 +1,7 @@
+name = "DictionaryDistance"
+uuid = "4a50f2c7-854b-4ecf-96c4-63ef3198682d"
+authors = ["Romeo Valentin <romeov@stanford.edu> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.10"

@@ -27,7 +27,7 @@ r = roc(nonzerovec(X[:]), nonzerovec(X_est_perm[:]))
 module DictionaryDistance
 import SparseArrays: nonzeroinds, SparseVector, nnz
 using Hungarian, Distances
-import MLBase: _roc
+import MLBase: _roc, ROCNums
 import Reexport: @reexport
 @reexport import MLBase: roc, precision, recall, f1score
 

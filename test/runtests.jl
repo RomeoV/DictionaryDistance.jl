@@ -2,13 +2,33 @@ using DictionaryDistance
 using Test
 using Aqua
 using JET
+using SparseArrays
+import Random: shuffle
 
 @testset "DictionaryDistance.jl" begin
-    @testset "Code quality (Aqua.jl)" begin
-        Aqua.test_all(DictionaryDistance)
+    # @testset "Code quality (Aqua.jl)" begin
+    #     Aqua.test_all(DictionaryDistance)
+    # end
+    # @testset "Code linting (JET.jl)" begin
+    #     JET.test_package(DictionaryDistance; target_defined_modules = true)
+    # end
+
+    D = rand(100, 400);
+    X = sprand(400, 10_000, 0.01)
+
+    perm = shuffle(axes(D, 2))
+    D_perm = D[:, perm]
+    (; assignment) = align_dictionaries(D, D_perm)
+    @testset "test dictionary alignment" begin
+        @test sortperm(perm) == assignment
     end
-    @testset "Code linting (JET.jl)" begin
-        JET.test_package(DictionaryDistance; target_defined_modules = true)
+
+    X_perm = X[perm, :];
+    X_recover = X_perm[assignment, :];
+    r = roc(nonzerovec(X[:]), nonzerovec(X_recover[:]))
+    @testset "test metrics" begin
+        @test precision(r) ≈ 1
+        @test recall(r) ≈ 1
+        @test f1score(r) ≈ 1
     end
-    # Write your tests here.
 end

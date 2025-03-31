@@ -26,7 +26,8 @@ r = roc(nonzerovec(X[:]), nonzerovec(X_est_perm[:]))
 """
 module DictionaryDistance
 import SparseArrays: nonzeroinds, SparseVector, nnz, sparse
-using Hungarian, Distances
+import Hungarian: hungarian
+import Distances: PreMetric, CosineDist
 import MLBase: _roc, ROCNums
 import Reexport: @reexport
 @reexport import MLBase: roc, precision, recall, f1score

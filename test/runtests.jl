@@ -7,12 +7,21 @@ import Random: shuffle
 
 @testset "DictionaryDistance.jl" begin
     @testset "Code quality (Aqua.jl)" begin
-        # we do pirate (on purpose) the `_roc` method.
-        # also there's some inherited method ambiguities from `StatsBase`, but they're not from us.
-        Aqua.test_all(DictionaryDistance; ambiguities=false, piracies=false)
+        if !haskey(ENV, "JULIA_SKIP_AQUA")
+            # we do pirate (on purpose) the `_roc` method.
+            # also there's some inherited method ambiguities from `StatsBase`, but they're not from us.
+            Aqua.test_all(DictionaryDistance; ambiguities = false, piracies = false)
+        else
+            @info "Skipping Aqua.jl tests"
+        end
     end
+
     @testset "Code linting (JET.jl)" begin
-        JET.test_package(DictionaryDistance; target_defined_modules = true)
+        if !haskey(ENV, "JULIA_SKIP_JET")
+            JET.test_package(DictionaryDistance; target_defined_modules = true)
+        else
+            @info "Skipping JET.jl tests"
+        end
     end
 
     D = rand(100, 400);

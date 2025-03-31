@@ -29,9 +29,10 @@ import Random: shuffle
 
     perm = shuffle(axes(D, 2))
     D_perm = D[:, perm]
-    (; assignment) = align_dictionaries(D, D_perm)
+    (; assignment, cost) = align_dictionaries(D, D_perm)
     @testset "test dictionary alignment" begin
         @test sortperm(perm) == assignment
+        @test cost < sqrt(eps(eltype(D)))
     end
 
     X_perm = X[perm, :];

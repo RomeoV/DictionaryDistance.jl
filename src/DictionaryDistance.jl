@@ -41,8 +41,9 @@ Finds the best assignment of dictionary vectors of `D_rhs` and `D_lhs`.
 Specifically, this function returns assignments s.t. D_rhs[:, assignment] ≈ D_lhs.
 If this comes frome some setup `Y ≈ D * X` then X_rhs[assignment, :] ≈ X_lhs.
 """
-function align_dictionaries(D_lhs::AbstractMatrix, D_rhs::AbstractMatrix)
-    distances = [CosineDist()(v1, v2) for v1 in eachcol(D_lhs), v2 in eachcol(D_rhs)]
+function align_dictionaries(D_lhs::AbstractMatrix, D_rhs::AbstractMatrix,
+        dist::PreMetric = CosineDist())
+    distances = [dist(v1, v2) for v1 in eachcol(D_lhs), v2 in eachcol(D_rhs)]
     assignment, cost = hungarian(distances)
     (; assignment, cost)  # s.t. D_rhs[:, assignment] ≈ D_lhs, and X_rhs[assignment, :] ≈ X_lhs
 end

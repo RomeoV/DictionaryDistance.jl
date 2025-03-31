@@ -1,4 +1,5 @@
 using DictionaryDistance
+using Distances
 using Test
 using Aqua
 using JET
@@ -24,7 +25,7 @@ import Random: shuffle
         end
     end
 
-    D = rand(100, 400);
+    D = rand(100, 400)
     X = sprand(400, 10_000, 0.01)
 
     perm = shuffle(axes(D, 2))
@@ -35,8 +36,15 @@ import Random: shuffle
         @test cost < sqrt(eps(eltype(D)))
     end
 
-    X_perm = X[perm, :];
-    X_recover = X_perm[assignment, :];
+    perm = shuffle(axes(X, 1))
+    X_perm = X[perm, :]
+    (; assignment, cost) = align_dictionaries(X', X_perm', SqEuclidean())
+    @testset "test dictionary alignment" begin
+        @test sortperm(perm) == assignment
+        @test cost < sqrt(eps(eltype(X)))
+    end
+
+    X_recover = X_perm[assignment, :]
     r = roc(nonzerovec(X[:]), nonzerovec(X_recover[:]))
     @testset "test metrics" begin
         @test precision(r) ≈ 1

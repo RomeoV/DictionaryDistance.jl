@@ -30,6 +30,7 @@ import Hungarian: hungarian
 import Distances: PreMetric, CosineDist
 import MLBase: _roc, ROCNums
 import Reexport: @reexport
+import MLBase
 @reexport import MLBase: roc, precision, recall, f1score
 
 export align_dictionaries, nonzerovec
@@ -53,7 +54,7 @@ function nonzerovec(vec::SparseVector{<:Number})
     SparseVector(length(vec), nonzeroinds(vec), fill(true, nnz(vec)))
 end
 
-function _roc(gt::SparseVector{Bool}, pr::SparseVector{Bool})
+function MLBase._roc(gt::SparseVector{Bool}, pr::SparseVector{Bool})
     len = length(gt)
     length(pr) == len || throw(DimensionMismatch("Inconsistent lengths."))
     p = sum(gt)
